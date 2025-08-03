@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Visor RGB Z-stack</title>
+  <style>
+        #main-container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    }
+
+    #info-box {
+    max-width: 300px;
+    padding: 10px 15px;
+    background-color: #111;
+    border: 1px solid #444;
+    border-radius: 10px;
+    color: #ddd;
+    font-size: 14px;
+    overflow-y: auto;
+    max-height: 712px;
+    }
+
+    #info-box h3 {
+    margin-top: 0;
+    color: #fff;
+    font-size: 16px;
+    border-bottom: 1px solid #444;
+    padding-bottom: 5px;
+    }
+
+    body {
+      background-color: #000;
+      color: white;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      height: 100vh;
+    }
+
+    #canvas {
+      border: 2px solid white;
+      max-width: 90%;
+      max-height: 70vh;
+    }
+
+    #controls {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      gap: 15px;
+    }
+
+    #slider {
+      width: 80%;
+    }
+
+    video {
+      display: none;
+    }
+    /* Estilo general */
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  background: #444;
+  outline: none;
+  border-radius: 5px;
+}
+
+/* Rastro para WebKit (Safari, Chrome) */
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 1px solid #ccc;
+}
+
+/* Rastro para Firefox */
+input[type=range]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  background: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Fondo visible en Firefox */
+input[type=range]::-moz-range-track {
+  background: #444;
+  height: 6px;
+  border-radius: 5px;
+}
+
+  </style>
+</head>
+<body>
+
+  <div id="main-container">
+    <canvas id="canvas" width="672" height="712"></canvas>
+
+    <div id="info-box">
+      <h3><i>Caenorhabditis elegans</i> embryo</h3>
+      <p>
+        This viewer displays a three-dimensional reconstruction of an early-stage embryo of the worm <i>Caenorhabditis elegans</i> captured using fluorescence microscopy.
+       <p>
+        Each image represents a thin optical slice of the embryo at a specific depth. The visualization combines three fluorescence channels, each revealing different cellular components:
+        <ul>
+            <li><b>CY3 (red)</b>: Marks specific proteins → seen as bright spots.</li>
+            <li><b>FITC (green)</b>: Stains microtubules → shows filament structures.</li>
+            <li><b>DAPI (blue)</b>: Labels DNA → highlights nuclei.</li>
+            
+        </ul>
+        </p> 
+
+        <strong>z-step:</strong> 0.2 µm<br>
+        <strong>Microscope Acquisition:</strong> Olympus CellR<br><br>
+       
+
+
+        
+    </div>
+  </div>
+
+  <div id="controls">
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="rCheckbox" checked> CY3 (Red)</label>
+      <label><input type="checkbox" id="gCheckbox" checked> FITC (Green)</label>
+      <label><input type="checkbox" id="bCheckbox" checked> DAPI (Blue)</label>
+    </div>
+
+    <input type="range" id="slider" min="0" max="100" value="0">
+    <div id="info">Z-depth: 0</div>
+    <button id="saveBtn">Save image PNG</button>
+
+
+  </div>
+
+  <!-- Videos ocultos -->
+  <video id="videoR" src="visualizador/CY3-nofilter.mp4" preload="auto"></video>
+  <video id="videoG" src="visualizador/FITC-nofilter.mp4" preload="auto"></video>
+  <video id="videoB" src="visualizador/DAPI-nofilter.mp4" preload="auto"></video>
+
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const slider = document.getElementById('slider');
+    const info = document.getElementById('info');
+
+    const rCheckbox = document.getElementById('rCheckbox');
+    const gCheckbox = document.getElementById('gCheckbox');
+    const bCheckbox = document.getElementById('bCheckbox');
+
+    const videoR = document.getElementById('videoR');
+    const videoG = document.getElementById('videoG');
+    const videoB = document.getElementById('videoB');
+
+    const fps = 15;
+    let totalFrames = 0;
+    let isReady = false;
+
+    function getGrayscale(video) {
+      const tmpCanvas = document.createElement('canvas');
+      tmpCanvas.width = canvas.width;
+      tmpCanvas.height = canvas.height;
+      const tmpCtx = tmpCanvas.getContext('2d');
+      tmpCtx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const frame = tmpCtx.getImageData(0, 0, canvas.width, canvas.height);
+
+      const gray = new Uint8ClampedArray(frame.data.length / 4);
+      for (let i = 0; i < frame.data.length; i += 4) {
+        gray[i / 4] = frame.data[i]; // canal rojo (equivalente a intensidad en grises)
+      }
+      return gray;
+    }
+
+    function drawFrame() {
+      const useR = rCheckbox.checked;
+      const useG = gCheckbox.checked;
+      const useB = bCheckbox.checked;
+
+      const rData = useR ? getGrayscale(videoR) : null;
+      const gData = useG ? getGrayscale(videoG) : null;
+      const bData = useB ? getGrayscale(videoB) : null;
+
+      const output = ctx.createImageData(canvas.width, canvas.height);
+      for (let i = 0; i < output.data.length; i += 4) {
+        const idx = i / 4;
+        output.data[i]     = rData ? rData[idx] : 0;
+        output.data[i + 1] = gData ? gData[idx] : 0;
+        output.data[i + 2] = bData ? bData[idx] : 0;
+        output.data[i + 3] = 255;
+      }
+
+      ctx.putImageData(output, 0, 0);
+    }
+
+    function goToFrame(frame) {
+      const zDepth = frame * 0.2;
+      info.textContent = `Z-depth: ${zDepth.toLocaleString()} µm`;
+  
+      
+
+      const promises = [];
+
+      if (rCheckbox.checked) {
+        promises.push(new Promise(res => {
+          videoR.onseeked = res;
+          videoR.currentTime = frame / fps;
+        }));
+      }
+
+      if (gCheckbox.checked) {
+        promises.push(new Promise(res => {
+          videoG.onseeked = res;
+          videoG.currentTime = frame / fps;
+        }));
+      }
+
+      if (bCheckbox.checked) {
+        promises.push(new Promise(res => {
+          videoB.onseeked = res;
+          videoB.currentTime = frame / fps;
+        }));
+      }
+
+      if (promises.length === 0) {
+        // Si ninguna casilla está activa, solo limpiar canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        return;
+      }
+
+      Promise.all(promises).then(() => {
+        drawFrame();
+      });
+    }
+
+    function onSliderChange() {
+      if (!isReady) return;
+      const frame = parseInt(slider.value);
+      goToFrame(frame);
+    }
+
+    // Inicialización
+    Promise.all([
+      new Promise(res => videoR.onloadedmetadata = res),
+      new Promise(res => videoG.onloadedmetadata = res),
+      new Promise(res => videoB.onloadedmetadata = res)
+    ]).then(() => {
+      const minDuration = Math.min(videoR.duration, videoG.duration, videoB.duration);
+      totalFrames = Math.floor(minDuration * fps);
+      slider.max = totalFrames - 1;
+      isReady = true;
+      slider.value = 50;
+      slider.dispatchEvent(new Event('input'));
+    });
+
+    slider.addEventListener('input', onSliderChange);
+    rCheckbox.addEventListener('change', onSliderChange);
+    gCheckbox.addEventListener('change', onSliderChange);
+    bCheckbox.addEventListener('change', onSliderChange);
+    const saveBtn = document.getElementById('saveBtn');
+
+    saveBtn.addEventListener('click', () => {
+        const link = document.createElement('a');
+        link.download = `frame_${slider.value}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+
+  </script>
+    
+  
+
+</body>
+</html>
