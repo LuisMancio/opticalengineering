@@ -14,7 +14,7 @@
     }
 
     #info-box {
-    max-width: 300px;
+    max-width: 500px;
     padding: 10px 15px;
     background-color: #111;
     border: 1px solid #444;
@@ -118,7 +118,7 @@ input[type=range]::-moz-range-track {
     <canvas id="canvas" width="672" height="712"></canvas>
 
     <div id="info-box">
-      <h3><i>Caenorhabditis elegans</i> embryo</h3>
+      <h3>Visualizing Biological Depth with Deconvolution</h3>
       <p>
         This viewer displays a three-dimensional reconstruction of an early-stage embryo of the worm <i>Caenorhabditis elegans</i> captured using fluorescence microscopy.
        <p>
@@ -132,7 +132,10 @@ input[type=range]::-moz-range-track {
         </p> 
 
         <strong>z-step:</strong> 0.2 µm<br>
+       
         <strong>Microscope Acquisition:</strong> Olympus CellR<br><br>
+        <strong>Image processing:</strong> Using DeconvolutionLab2 developed by the Biomedical Imaging Group at EPFL, a Richardson–Lucy deconvolution algorithm was applied to enhance image contrast and sharpness by reducing optical blur introduced by the microscope's point spread function (PSF).<br><br>
+       
        
 
 
@@ -155,9 +158,9 @@ input[type=range]::-moz-range-track {
   </div>
 
   <!-- Videos ocultos -->
-  <video id="videoR" src="visualizador/CY3-nofilter.mp4" preload="auto"></video>
-  <video id="videoG" src="visualizador/FITC-nofilter.mp4" preload="auto"></video>
-  <video id="videoB" src="visualizador/DAPI-nofilter.mp4" preload="auto"></video>
+  <video id="videoR" src="visualizador/RichardsonLucy-CY3-3iterations.mp4" preload="auto"></video>
+  <video id="videoG" src="visualizador/RichardsonLucy-FITC-3iterations.mp4" preload="auto"></video>
+  <video id="videoB" src="visualizador/RichardsonLucy-DAPI-3iterations.mp4" preload="auto"></video>
 
   <script>
     const canvas = document.getElementById('canvas');
