@@ -155,6 +155,15 @@
         opacity: 1;
       }
 
+      /* Contenedor de imagen grande */
+      .image-container-large {
+        position: relative;
+        max-width: 90%; /* Ocupa casi todo el ancho disponible */
+        overflow: hidden;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+
       /* Responsive */
       @media (max-width: 768px) {
         .video-container {
@@ -284,6 +293,19 @@
 
     </section>
 
+    <!-- Sección de imágenes con overlay -->
+    <section class="videos-section">
+
+      <!-- Imagen grande única -->
+      <div class="image-container-large" onclick="openImageModal(0)">
+        <img src="files/large-image.png" alt="Imagen grande" style="width: 100%; display: block; border-radius: 10px;">
+        <div class="overlay">
+          There are different approaches to compute the diffracted field of an object numerically, such as the Fresnel approximation. However, when aiming to calculate the exact integral in the near field, the computational time increases significantly. In this work, we present an analysis of how this computation can be reduced by exploiting the symmetries that arise in the problem. This strategy avoids recalculating redundant distances and instead relies on simple image rotations. The study is published in: Villa-Hernández, J. M., Olivares-Pérez, A., Herran-Cuspinera, R., Juárez-Pérez, J. L., Mancio, L., & Delesma, R. (2024). Study of Behavior of Geometric Symmetries of 3D Objects with Digital Fresnel–Kirchhoff Holograms, Using Non-Redundant Calculations. Symmetry, 16(9).
+        </div>
+      </div>
+
+    </section>
+
     <!-- MODAL PARA VIDEOS -->
     <div id="videoModal" class="video-modal" onclick="closeModal()">
       <div class="video-modal-content" onclick="event.stopPropagation()">
@@ -292,6 +314,15 @@
           <source id="modalVideoSource" src="" type="video/mp4">
         </video>
         <div class="modal-description" id="modalDescription"></div>
+      </div>
+    </div>
+
+    <!-- MODAL PARA IMÁGENES -->
+    <div id="imageModal" class="video-modal" onclick="closeImageModal()">
+      <div class="video-modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="closeImageModal()">&times;</button>
+        <img id="modalImage" src="" alt="Imagen ampliada" style="width: 100%; height: auto; display: block; border-radius: 10px;">
+        <div class="modal-description" id="modalImageDescription"></div>
       </div>
     </div>
 
@@ -312,6 +343,13 @@
         {
           src: 'files/fringes_low.mp4',
           description: 'Holographic interferometry is a technique that allows precise measurement of displacements and strains by visualizing interference fringes. This video illustrates how the visibility or contrast of the fringes changes with depth and depends on factors such as the system\'s numerical aperture and the coherence of the light source.'
+        }
+      ];
+
+      const images = [
+        {
+          src: 'files/large-image.png',
+          description: 'There are different approaches to compute the diffracted field of an object numerically, such as the Fresnel approximation. However, when aiming to calculate the exact integral in the near field, the computational time increases significantly. In this work, we present an analysis of how this computation can be reduced by exploiting the symmetries that arise in the problem. This strategy avoids recalculating redundant distances and instead relies on simple image rotations. The study is published in: Villa-Hernández, J. M., Olivares-Pérez, A., Herran-Cuspinera, R., Juárez-Pérez, J. L., Mancio, L., & Delesma, R. (2024). Study of Behavior of Geometric Symmetries of 3D Objects with Digital Fresnel–Kirchhoff Holograms, Using Non-Redundant Calculations. Symmetry, 16(9).'
         }
       ];
 
@@ -346,10 +384,33 @@
         modalVideo.pause();
       }
 
+      function openImageModal(imageIndex) {
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalDescription = document.getElementById('modalImageDescription');
+        
+        // Configurar la imagen del modal
+        modalImage.src = images[imageIndex].src;
+        modalDescription.textContent = images[imageIndex].description;
+        
+        // Mostrar el modal
+        modal.classList.add('active');
+        document.body.classList.add('modal-open');
+      }
+
+      function closeImageModal() {
+        const modal = document.getElementById('imageModal');
+        
+        // Ocultar el modal
+        modal.classList.remove('active');
+        document.body.classList.remove('modal-open');
+      }
+
       // Cerrar modal con tecla Escape
       document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
           closeModal();
+          closeImageModal();
         }
       });
     </script>
