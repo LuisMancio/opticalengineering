@@ -198,6 +198,32 @@
       body.modal-open {
         overflow: hidden;
       }
+      /* Contenedor de video grande (full width) */
+      .video-container-full {
+        position: relative;
+        width: 92%;   /* 100% ocupa todo el ancho */
+        max-width: 100%; 
+        margin: 0 auto;    /* centra horizontalmente */
+        overflow: hidden;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .video-container-full video {
+        width: 100%;
+        height: auto;
+        display: block;
+        transition: filter 0.3s ease;
+        z-index: 1;
+      }
+      .video-container-full:hover .overlay {
+        opacity: 1;
+      }
+      .video-container-full:hover video {
+        filter: brightness(0.4);
+      }
+    
+
+
     </style>
   </head>
   <body class="u-body u-xl-mode" data-lang="es"> 
@@ -298,7 +324,24 @@
         </div>
       </div>
 
-    </section>
+  
+
+<!-- Video grande -->
+<section class="video-section-full">
+    <div class="video-container-full" onclick="openModal(4)">
+    <video autoplay loop muted playsinline>
+      <source src="files/optic_microphone.mp4" type="video/mp4">
+      Tu navegador no soporta video HTML5.
+    </video>
+    <div class="overlay">
+      In this setup, we employ a laser to generate a highly sensitive interference pattern. By using a high-speed detector and a camera, we are able to measure acoustic and vibrational effects in different objects. The detector can be connected to a computer and functions like a microphone, allowing real-time analysis of the acoustic signal. Meanwhile, the camera provides access to the spatial distribution of the vibrations, offering a detailed visualization of how sound and mechanical disturbances propagate across the object.
+    </div>
+  </div>
+
+  </section>
+
+
+
     <!-- Visor -->
 <section class="visor-section" style="width: 100%; height: 90vh; background-color: black; border: none; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center;">
     <div class="visor-container" onclick="window.open('Pagina_visor.html', '_blank')" style="cursor: pointer; position: relative; width: 80%; height: 80%; max-width: 800px;">
@@ -381,7 +424,11 @@
         {
           src: 'files/fringes_low.mp4',
           description: 'Holographic interferometry is a technique that allows precise measurement of displacements and strains by visualizing interference fringes. This video illustrates how the visibility or contrast of the fringes changes with depth and depends on factors such as the system\'s numerical aperture and the coherence of the light source.'
-        }
+        },
+        {
+          src: 'files/optic_microphone.mp4',
+          description: 'This full-width video demonstrates advanced holographic visualization. Click to expand and play automatically in immersive mode.'
+        }   
       ];
 
       const images = [

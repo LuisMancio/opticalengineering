@@ -26561,14 +26561,14 @@ h6 {
 .u-overlap.u-overlap-transparent .u-header,
 .u-image,
 .u-gradient {
-  color: #111111;
+  color: #000000;
 }
 .u-shading,
 .u-overlap.u-overlap-contrast .u-header {
   color: #ffffff;
 }
 .u-body {
-  color: #111111;
+  color: #000000;
   background-color: #ffffff;
   --effect-scale: 1.1;
 }
