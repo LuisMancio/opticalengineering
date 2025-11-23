@@ -18,60 +18,156 @@
       /* Estilos para la sección de videos */
       .videos-section {
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 20px;
-        padding: 20px;
-        background-color: #111;
+        flex-direction: column;
+        gap: 30px;
+        padding: 40px 20px;
+        background-color: #0a0a0a;
+        max-width: 1000px;
+        margin: 0 auto;
       }
 
       /* Contenedor de video */
       .video-container {
         position: relative;
-        max-width: 45%;
+        width: 100%;
+        aspect-ratio: 16 / 9;
         overflow: hidden;
-        border-radius: 10px;
+        border-radius: 12px;
         cursor: pointer;
+        background-color: #1a1a1a;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .video-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
       }
 
       /* Video */
       .video-container video {
         width: 100%;
-        display: block;
-        transition: filter 0.3s ease;
-        z-index: 1;
-      }
-
-      /* Overlay de texto */
-      .overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 20px;
-        box-sizing: border-box;
-        font-size: 16px;
-        line-height: 1.4;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        z-index: 10;
-        pointer-events: none;
-      }
-
-      /* Efectos de hover */
-      .video-container:hover .overlay {
-        opacity: 1;
+        object-fit: cover;
+        display: block;
+        transition: filter 0.3s ease, transform 0.3s ease;
+        z-index: 1;
+        background-color: #1a1a1a;
       }
 
       .video-container:hover video {
-        filter: brightness(0.4);
+        filter: brightness(0.7);
+        transform: scale(1.02);
+      }
+
+      /* Botón de play centrado */
+      .play-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: #333;
+        transition: all 0.3s ease;
+        z-index: 3;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        opacity: 0.95;
+        pointer-events: auto;
+      }
+
+      .play-button:hover {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.95));
+        transform: translate(-50%, -50%) scale(1.1);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+      }
+
+      /* Ocultar botón de play cuando aparece la descripción */
+      .video-container:hover .video-description {
+        z-index: 5;
+      }
+
+      .video-container:hover .play-button {
+        opacity: 0;
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      .play-button.hidden {
+        opacity: 0;
+        pointer-events: none;
+        display: none;
+      }
+
+      /* Indicador de "Click para ampliar" */
+      .expand-indicator {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 40px;
+        height: 40px;
+        background-color: rgba(0, 0, 0, 0.7);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 6;
+        pointer-events: none;
+      }
+
+      .video-container:hover .expand-indicator {
+        opacity: 1;
+      }
+
+      /* Overlay de descripción */
+      .video-description {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.8), transparent);
+        color: white;
+        padding: 25px 20px 20px;
+        font-size: 14px;
+        line-height: 1.5;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 5;
+        pointer-events: none;
+        transform: translateY(100%);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        max-height: 50%;
+        overflow-y: auto;
+      }
+
+      .video-container:hover .video-description {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Ocultar botón cuando aparece descripción */
+      .video-container:hover .video-description {
+        z-index: 5;
+      }
+
+      .video-container:hover .play-button {
+        z-index: 2;
+      }
+
+      .video-container video {
+        cursor: pointer;
       }
 
       /* MODAL/LIGHTBOX STYLES */
@@ -81,14 +177,15 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        background-color: rgba(0, 0, 0, 0.9);
+        background-color: rgba(0, 0, 0, 0.95);
         display: flex;
         align-items: center;
         justify-content: center;
         z-index: 1000;
         opacity: 0;
         visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0.3s ease;
+        transition: opacity 0.4s ease, visibility 0.4s ease;
+        backdrop-filter: blur(10px);
       }
 
       .video-modal.active {
@@ -98,11 +195,18 @@
 
       .video-modal-content {
         position: relative;
-        max-width: 90vw;
+        width: 90vw;
+        max-width: 1400px;
         max-height: 90vh;
-        border-radius: 10px;
+        border-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+        transform: scale(0.9);
+        transition: transform 0.4s ease;
+      }
+
+      .video-modal.active .video-modal-content {
+        transform: scale(1);
       }
 
       .video-modal video {
@@ -110,30 +214,34 @@
         height: auto;
         display: block;
         max-height: 90vh;
+        background-color: #000;
       }
 
       .modal-close {
         position: absolute;
-        top: -40px;
-        right: -40px;
-        width: 40px;
-        height: 40px;
-        background-color: rgba(255, 255, 255, 0.9);
+        top: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        background-color: rgba(255, 255, 255, 0.95);
         border: none;
         border-radius: 50%;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 20px;
+        font-size: 28px;
         font-weight: bold;
         color: #333;
-        transition: background-color 0.3s ease;
+        transition: all 0.3s ease;
         z-index: 1001;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
       }
 
       .modal-close:hover {
         background-color: white;
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
       }
 
       .modal-description {
@@ -141,12 +249,12 @@
         bottom: 0;
         left: 0;
         right: 0;
-        background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.8), transparent);
         color: white;
-        padding: 40px 20px 20px;
+        padding: 50px 30px 30px;
         text-align: center;
         font-size: 16px;
-        line-height: 1.4;
+        line-height: 1.6;
         opacity: 0;
         transition: opacity 0.3s ease;
       }
@@ -166,31 +274,43 @@
 
       /* Responsive */
       @media (max-width: 768px) {
-        .video-container {
-          max-width: 90%;
+        .videos-section {
+          gap: 20px;
+          padding: 20px 15px;
+          max-width: 100%;
         }
-        
-        .overlay {
-          font-size: 14px;
-          padding: 15px;
+
+        .video-container {
+          border-radius: 10px;
+        }
+
+        .play-button {
+          width: 50px;
+          height: 50px;
+          font-size: 20px;
+        }
+
+        .video-description {
+          font-size: 13px;
+          padding: 20px 15px 15px;
         }
 
         .video-modal-content {
-          max-width: 95vw;
+          width: 95vw;
           max-height: 85vh;
         }
 
         .modal-close {
-          top: 10px;
-          right: 10px;
-          width: 35px;
-          height: 35px;
-          font-size: 18px;
+          top: 15px;
+          right: 15px;
+          width: 40px;
+          height: 40px;
+          font-size: 24px;
         }
 
         .modal-description {
           font-size: 14px;
-          padding: 30px 15px 15px;
+          padding: 40px 20px 20px;
         }
       }
 
@@ -198,29 +318,6 @@
       /* body.modal-open {
     overflow: hidden;
       } */
-      /* Contenedor de video grande (full width) */
-      .video-container-full {
-        position: relative;
-        width: 92%;   /* 100% ocupa todo el ancho */
-        max-width: 100%; 
-        margin: 0 auto;    /* centra horizontalmente */
-        overflow: hidden;
-        border-radius: 10px;
-        cursor: pointer;
-      }
-      .video-container-full video {
-        width: 100%;
-        height: auto;
-        display: block;
-        transition: filter 0.3s ease;
-        z-index: 1;
-      }
-      .video-container-full:hover .overlay {
-        opacity: 1;
-      }
-      .video-container-full:hover video {
-        filter: brightness(0.4);
-      }
     
 
 
@@ -277,68 +374,75 @@
 
 
 
-    <!-- Sección de videos con overlay -->
+    <!-- Sección de videos -->
     <section class="videos-section">
 
       <!-- Video 1 -->
       <div class="video-container" onclick="openModal(0)">
-        <video autoplay loop muted playsinline>
+        <video loop muted playsinline preload="metadata" data-video-index="0">
           <source src="files/depth.mp4" type="video/mp4">
           Tu navegador no soporta video HTML5.
         </video>
-        <div class="overlay">
+        <button class="play-button" onclick="event.stopPropagation(); openModal(0);">▶</button>
+        <div class="expand-indicator">⛶</div>
+        <div class="video-description">
           Holographic reconstruction from a kinoform created with the Gerchberg–Saxton algorithm, designed to produce two different images at separate depths. It illustrates how phase-only holograms can control the focus of information in 3D space.
         </div>
       </div>
 
       <!-- Video 2 -->
       <div class="video-container" onclick="openModal(1)">
-        <video autoplay loop muted playsinline>
+        <video loop muted playsinline preload="metadata" data-video-index="1">
           <source src="files/exp_num.mp4" type="video/mp4">
           Tu navegador no soporta video HTML5.
         </video>
-        <div class="overlay">
+        <button class="play-button" onclick="event.stopPropagation(); openModal(1);">▶</button>
+        <div class="expand-indicator">⛶</div>
+        <div class="video-description">
           The reconstruction of a DOE is presented both numerically through simulation and experimentally by displaying the DOE on a Spatial Light Modulator (SLM), a device that dynamically modulates the phase of light to reproduce holograms.
         </div>
       </div>
 
       <!-- Video 3 -->
       <div class="video-container" onclick="openModal(2)">
-        <video autoplay loop muted playsinline>
+        <video loop muted playsinline preload="metadata" data-video-index="2">
           <source src="files/compex_bessel_beams.mp4" type="video/mp4">
           Tu navegador no soporta video HTML5.
         </video>
-        <div class="overlay">
+        <button class="play-button" onclick="event.stopPropagation(); openModal(2);">▶</button>
+        <div class="expand-indicator">⛶</div>
+        <div class="video-description">
           Bessel beams are optical fields known for their unique properties, such as self-healing and extended depth of focus. While they are usually studied for integer and fractional orders, this project explores Bessel beams with complex-valued orders, investigating new behaviors.
         </div>
       </div>
 
       <!-- Video 4 -->
       <div class="video-container" onclick="openModal(3)">
-        <video autoplay loop muted playsinline>
+        <video loop muted playsinline preload="metadata" data-video-index="3">
           <source src="files/fringes_low.mp4" type="video/mp4">
           Tu navegador no soporta video HTML5.
         </video>
-        <div class="overlay">
+        <button class="play-button" onclick="event.stopPropagation(); openModal(3);">▶</button>
+        <div class="expand-indicator">⛶</div>
+        <div class="video-description">
           Holographic interferometry is a technique that allows precise measurement of displacements and strains by visualizing interference fringes. This video illustrates how the visibility or contrast of the fringes changes with depth and depends on factors such as the system's numerical aperture and the coherence of the light source.
         </div>
       </div>
 
-  
+      <!-- Video 5 -->
+      <div class="video-container" onclick="openModal(4)">
+        <video loop muted playsinline preload="metadata" data-video-index="4">
+          <source src="files/optic_microphone.mp4" type="video/mp4">
+          Tu navegador no soporta video HTML5.
+        </video>
+        <button class="play-button" onclick="event.stopPropagation(); openModal(4);">▶</button>
+        <div class="expand-indicator">⛶</div>
+        <div class="video-description">
+          In this setup, we employ a laser to generate a highly sensitive interference pattern. By using a high-speed detector and a camera, we are able to measure acoustic and vibrational effects in different objects. The detector can be connected to a computer and functions like a microphone, allowing real-time analysis of the acoustic signal. Meanwhile, the camera provides access to the spatial distribution of the vibrations, offering a detailed visualization of how sound and mechanical disturbances propagate across the object.
+        </div>
+      </div>
 
-<!-- Video grande -->
-<section class="video-section-full">
-    <div class="video-container-full" onclick="openModal(4)">
-    <video autoplay loop muted playsinline>
-      <source src="files/optic_microphone.mp4" type="video/mp4">
-      Tu navegador no soporta video HTML5.
-    </video>
-    <div class="overlay">
-      In this setup, we employ a laser to generate a highly sensitive interference pattern. By using a high-speed detector and a camera, we are able to measure acoustic and vibrational effects in different objects. The detector can be connected to a computer and functions like a microphone, allowing real-time analysis of the acoustic signal. Meanwhile, the camera provides access to the spatial distribution of the vibrations, offering a detailed visualization of how sound and mechanical disturbances propagate across the object.
-    </div>
-  </div>
-
-  </section>
+    </section>
 
 
 
@@ -391,7 +495,7 @@
     <div id="videoModal" class="video-modal" onclick="closeModal()">
       <div class="video-modal-content" onclick="event.stopPropagation()">
         <button class="modal-close" onclick="closeModal()">&times;</button>
-        <video id="modalVideo" autoplay loop muted>
+        <video id="modalVideo" loop muted autoplay>
           <source id="modalVideoSource" src="" type="video/mp4">
         </video>
         <div class="modal-description" id="modalDescription"></div>
@@ -438,7 +542,17 @@
         }
       ];
 
+      // Pausar todos los videos cuando se abre el modal
+      function pauseAllVideos() {
+        const allVideos = document.querySelectorAll('.video-container video, .video-container-full video');
+        allVideos.forEach(video => {
+          video.pause();
+        });
+      }
+
       function openModal(videoIndex) {
+        pauseAllVideos();
+        
         const modal = document.getElementById('videoModal');
         const modalVideo = document.getElementById('modalVideo');
         const modalVideoSource = document.getElementById('modalVideoSource');
@@ -451,22 +565,26 @@
         
         // Mostrar el modal
         modal.classList.add('active');
-        document.body.classList.add('modal-open');
+        document.body.style.overflow = 'hidden';
         
-        // Reproducir el video
-        modalVideo.play();
+        // Reproducir el video automáticamente
+        modalVideo.play().catch(error => {
+          console.error('Error al reproducir el video en el modal:', error);
+        });
       }
 
       function closeModal() {
         const modal = document.getElementById('videoModal');
         const modalVideo = document.getElementById('modalVideo');
+        const modalVideoSource = document.getElementById('modalVideoSource');
         
         // Ocultar el modal
         modal.classList.remove('active');
-        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
         
         // Pausar el video
         modalVideo.pause();
+        modalVideoSource.src = ''; // Limpiar la fuente para liberar memoria
       }
 
       function openImageModal(imageIndex) {
@@ -480,7 +598,7 @@
         
         // Mostrar el modal
         modal.classList.add('active');
-        document.body.classList.add('modal-open');
+        document.body.style.overflow = 'hidden';
       }
 
       function closeImageModal() {
@@ -488,7 +606,7 @@
         
         // Ocultar el modal
         modal.classList.remove('active');
-        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
       }
 
       // Cerrar modal con tecla Escape
@@ -497,6 +615,20 @@
           closeModal();
           closeImageModal();
         }
+      });
+
+      // Cargar metadata de videos para mostrar thumbnails
+      document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.video-container video, .video-container-full video').forEach(video => {
+          // Asegurar que se carga el primer frame
+          video.addEventListener('loadedmetadata', function() {
+            // Forzar la visualización del primer frame
+            this.currentTime = 0.1;
+            setTimeout(() => {
+              this.currentTime = 0;
+            }, 100);
+          });
+        });
       });
     </script>
     
